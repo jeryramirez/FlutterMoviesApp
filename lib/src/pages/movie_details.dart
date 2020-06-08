@@ -10,7 +10,6 @@ class MovieDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-
     final Movie movie = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
@@ -69,11 +68,14 @@ class MovieDetails extends StatelessWidget {
 
       child: Row(
         children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20.0),
-            child: Image(
-              image: NetworkImage(movie.getPosterImg()),
-              height: 150.0,
+          Hero(
+            tag: movie.uniqueId,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Image(
+                image: NetworkImage(movie.getPosterImg()),
+                height: 150.0,
+              ),
             ),
           ),
           SizedBox(width: 10,),
@@ -132,9 +134,6 @@ class MovieDetails extends StatelessWidget {
         if(snapshot.hasData){
           return _createActorsPageView(snapshot.data);
         }
-         else if(snapshot.error){
-          return AlertDialog();
-        }
          else {
           return Center(child: CircularProgressIndicator(),);
         }
@@ -164,12 +163,33 @@ class MovieDetails extends StatelessWidget {
         itemCount: actors.length,
         itemBuilder: ( context, i){
 
-          return Text(actors[i].name);
+          return _actorCard( actors[i]);
         }
 
       ),
     );
 
 
+  }
+
+  Widget _actorCard(Actor actor){
+    return Container(
+      child: Column(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20.0),
+            child: FadeInImage(
+              image: NetworkImage(actor.getActorPhoto()),
+              placeholder: AssetImage('assets/img/no-image.jpg'),
+              height: 150.0,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Text(
+            actor.name, overflow: TextOverflow.ellipsis,
+          )
+        ],
+      ),
+    );
   }
 }
